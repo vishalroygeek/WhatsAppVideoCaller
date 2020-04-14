@@ -3,4 +3,12 @@
     <color name="colorPrimary">#6200EE</color>
     <color name="colorPrimaryDark">#3700B3</color>
     <color name="colorAccent">#03DAC5</color>
+    <color name="colorBackground">#F8FBFB</color>
+    <color name="colorTextWhite">#FFFFFF</color>
+    <color name="colorTextBlack">#2C3335</color>
+    <color name="colorTextGreyHint">#9999AAAB</color>
+    <color name="colorTextMessage">#E6808080</color>
+    <color name="colorDividerGrey">#E6E0E5E6</color>
+    <color name="colorCursor">#E699AAAB</color>
+    <color name="colorVideoCallButton">#3ABE79</color>
 </resources>

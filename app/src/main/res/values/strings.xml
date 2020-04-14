@@ -1,3 +1,10 @@
 <resources>
     <string name="app_name">WhatsApp Video Caller</string>
+
+    <!--Short strings-->
+    <string name="number_input_hint">Phone Number</string>
+    <string name="video_call_btn_txt">Start video Call&#160;&#160;📹</string>
+
+    <!--Long strings-->
+    <string name="video_call_message">Video call would be made to the WhatsApp number you type above</string>
 </resources>
