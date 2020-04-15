@@ -4,7 +4,13 @@
     <!--Short strings-->
     <string name="number_input_hint">Phone Number</string>
     <string name="video_call_btn_txt">Start video Call&#160;&#160;📹</string>
+    <string name="permissions_denied">Permissions denied</string>
+    <string name="permissions_grant">Please grant permissions</string>
+    <string name="invalid_number">Phone number is not valid</string>
+    <string name="call_via">Call using</string>
 
     <!--Long strings-->
     <string name="video_call_message">Video call would be made to the WhatsApp number you type above</string>
+    <string name="not_whatsapp_number">Phone number doesn\'t exist on WhatsApp</string>
+    <string name="whatsapp_not_found">WhatsApp is not installed on this device</string>
 </resources>
