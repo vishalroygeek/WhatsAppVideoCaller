@@ -16,4 +16,8 @@ public class Constants {
     /*URLs*/
     public static final String URL_WHATSAPP = "https://www.whatsapp.com";
 
+    /*Notification params*/
+    public static final String NOTIFICATION_CHANNEL_ID = "default";
+    public static final String NOTIFICATION_CHANNEL_NAME = "WhatsApp Video Caller Service";
+
 }

@@ -11,7 +11,10 @@ import android.graphics.drawable.Drawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
+import android.os.Build;
 import android.os.RemoteException;
+import android.os.VibrationEffect;
+import android.os.Vibrator;
 import android.provider.ContactsContract;
 import android.provider.Settings;
 import android.util.Log;
@@ -184,6 +187,19 @@ public class Utils {
         ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
         return activeNetworkInfo != null;
+    }
+
+    //Method to vibrate device for a given time
+    public void vibrate(int millis, Context context){
+        Vibrator vibrator = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
+
+        if (vibrator!=null){
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                vibrator.vibrate(VibrationEffect.createOneShot(millis,VibrationEffect.DEFAULT_AMPLITUDE));
+            }else{
+                vibrator.vibrate(millis);
+            }
+        }
     }
 
     //Method to show toast

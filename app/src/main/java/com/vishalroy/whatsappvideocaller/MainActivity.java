@@ -1,12 +1,22 @@
 package com.vishalroy.whatsappvideocaller;
 
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 
 import android.Manifest;
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.provider.Settings;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -24,11 +34,14 @@ import com.karumi.dexter.listener.multi.MultiplePermissionsListener;
 import com.vishalroy.whatsappvideocaller.Dialogs.LoaderDialog;
 import com.vishalroy.whatsappvideocaller.Helpers.Typefaces;
 import com.vishalroy.whatsappvideocaller.Helpers.Utils;
+import com.vishalroy.whatsappvideocaller.Services.DisableTouch;
 
 import java.util.List;
 
 import static com.vishalroy.whatsappvideocaller.Helpers.Constants.MIME_WHATSAPP_BUSINESS_VIDEO_CALL;
 import static com.vishalroy.whatsappvideocaller.Helpers.Constants.MIME_WHATSAPP_VIDEO_CALL;
+import static com.vishalroy.whatsappvideocaller.Helpers.Constants.NOTIFICATION_CHANNEL_ID;
+import static com.vishalroy.whatsappvideocaller.Helpers.Constants.NOTIFICATION_CHANNEL_NAME;
 import static com.vishalroy.whatsappvideocaller.Helpers.Constants.PACKAGE_WHATSAPP;
 import static com.vishalroy.whatsappvideocaller.Helpers.Constants.PACKAGE_WHATSAPP_BUSINESS;
 import static com.vishalroy.whatsappvideocaller.Helpers.Constants.URL_WHATSAPP;
@@ -175,8 +188,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                             utils.toast(getString(R.string.permissions_grant));
                             utils.openAppSettings();
                         }else if (multiplePermissionsReport.areAllPermissionsGranted()){
-                            //Letting user choose if multiple WhatsApps are installed
-                            makeWhatsAppVideoCall(MainActivity.this);
+                            //Disabling the restricted touch are and making the call
+                            restrictAreaAndCall();
                         }else {
                             //Notifying user that permission has been denied
                             utils.toast(getString(R.string.permissions_denied));
@@ -188,6 +201,34 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         permissionToken.continuePermissionRequest();
                     }
                 }).check();
+    }
+
+    private void restrictAreaAndCall(){
+        //Before Android M we didn't need any permission to draw over apps
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+            startDisableTouchService();
+            makeWhatsAppVideoCall(MainActivity.this);
+        }
+
+        //Checking if permission has been granted to draw over apps
+        else if (Settings.canDrawOverlays(this)) {
+            startDisableTouchService();
+            makeWhatsAppVideoCall(MainActivity.this);
+        }
+
+        //Launching overlay permission settings
+        else {
+            Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                    Uri.parse("package:" + getPackageName()));
+            startActivityForResult(intent, 10);
+            utils.toast(getString(R.string.allow_overlay));
+        }
+    }
+
+    private void startDisableTouchService(){
+        Intent intent = new Intent(this, DisableTouch.class);
+        ContextCompat.startForegroundService(this, intent);
+
     }
 
     private void makeWhatsAppVideoCall(Context context){

@@ -8,11 +8,15 @@
     <string name="permissions_grant">Please grant permissions</string>
     <string name="invalid_number">Phone number is not valid</string>
     <string name="call_via">Call using</string>
+    <string name="restricted_area">Restricted area ⚠️</string>
+    <string name="touch_disabled">Touch Disabled</string>
 
     <!--Long strings-->
     <string name="video_call_message">Video call would be made to the WhatsApp number you type above</string>
     <string name="not_whatsapp_number">Phone number doesn\'t exist on WhatsApp</string>
     <string name="whatsapp_not_found">WhatsApp is not installed on this device</string>
     <string name="no_internet">Device is not connected to the internet</string>
+    <string name="allow_overlay">Please grant permission to draw over apps</string>
+    <string name="touch_service_running">Service is running in the background</string>
 
 </resources>
