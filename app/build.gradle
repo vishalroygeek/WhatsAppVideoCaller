@@ -1,4 +1,6 @@
 apply plugin: 'com.android.application'
+apply plugin: 'com.google.gms.google-services'
+apply plugin: 'com.google.firebase.crashlytics'
 
 android {
     compileSdkVersion 29
@@ -33,6 +35,10 @@ dependencies {
     implementation 'com.hbb20:ccp:2.3.8'
     implementation 'com.github.rahatarmanahmed:circularprogressview:2.5.0'
     implementation 'com.github.rubensousa:bottomsheetbuilder:1.6.1'
+
+    //Firebase
+    implementation 'com.google.firebase:firebase-analytics:17.3.0'
+    implementation 'com.google.firebase:firebase-crashlytics:17.0.0-beta04'
 
     //Lottie animation
     implementation 'com.airbnb.android:lottie:3.0.0'
