@@ -13,4 +13,7 @@ public class Constants {
     public static final String PACKAGE_WHATSAPP = "com.whatsapp";
     public static final String PACKAGE_WHATSAPP_BUSINESS = "com.whatsapp.w4b";
 
+    /*URLs*/
+    public static final String URL_WHATSAPP = "https://www.whatsapp.com";
+
 }

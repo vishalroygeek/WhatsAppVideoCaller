@@ -13,4 +13,6 @@
     <string name="video_call_message">Video call would be made to the WhatsApp number you type above</string>
     <string name="not_whatsapp_number">Phone number doesn\'t exist on WhatsApp</string>
     <string name="whatsapp_not_found">WhatsApp is not installed on this device</string>
+    <string name="no_internet">Device is not connected to the internet</string>
+
 </resources>

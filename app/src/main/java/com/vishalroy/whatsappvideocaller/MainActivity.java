@@ -31,9 +31,11 @@ import static com.vishalroy.whatsappvideocaller.Helpers.Constants.MIME_WHATSAPP_
 import static com.vishalroy.whatsappvideocaller.Helpers.Constants.MIME_WHATSAPP_VIDEO_CALL;
 import static com.vishalroy.whatsappvideocaller.Helpers.Constants.PACKAGE_WHATSAPP;
 import static com.vishalroy.whatsappvideocaller.Helpers.Constants.PACKAGE_WHATSAPP_BUSINESS;
+import static com.vishalroy.whatsappvideocaller.Helpers.Constants.URL_WHATSAPP;
 import static com.vishalroy.whatsappvideocaller.Helpers.Utils.contactIdByPhoneNumber;
 import static com.vishalroy.whatsappvideocaller.Helpers.Utils.getAppIconFromPackage;
 import static com.vishalroy.whatsappvideocaller.Helpers.Utils.getAppNameFromPackage;
+import static com.vishalroy.whatsappvideocaller.Helpers.Utils.hasActiveInternetConnection;
 import static com.vishalroy.whatsappvideocaller.Helpers.Utils.isAppInstalled;
 import static com.vishalroy.whatsappvideocaller.Helpers.Utils.isStringValid;
 import static com.vishalroy.whatsappvideocaller.Helpers.Utils.saveNewContact;
@@ -94,6 +96,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private class SaveContactAndCall extends AsyncTask<Void, Void, Void>{
         String contactID, phoneNumber, packageName, whatsAppMime;
+        boolean noInternet = false;
 
         public SaveContactAndCall(String packageName, String whatsAppMime) {
             this.packageName = packageName;
@@ -112,22 +115,26 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         @Override
         protected Void doInBackground(Void... voids) {
-            //Getting contact ID from phone number
-            contactID = contactIdByPhoneNumber(MainActivity.this, phoneNumber, whatsAppMime);
+            if (hasActiveInternetConnection(MainActivity.this, URL_WHATSAPP)){
+                //Getting contact ID from phone number
+                contactID = contactIdByPhoneNumber(MainActivity.this, phoneNumber, whatsAppMime);
 
-            //Lets proceed if the phone number is not saved
-            if (!isStringValid(contactID)){
-                //Saving the number as contact & getting the ID
-                saveNewContact(phoneNumber, phoneNumber, getContentResolver());
+                //Lets proceed if the phone number is not saved
+                if (!isStringValid(contactID)){
+                    //Saving the number as contact & getting the ID
+                    saveNewContact(phoneNumber, phoneNumber, getContentResolver());
 
-                /*Adding a delay to let WhatsApp update MIME details
-                 * of the contact*/
-                new Handler().postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        contactID = contactIdByPhoneNumber(MainActivity.this, phoneNumber, whatsAppMime);
-                    }
-                }, 5000);
+                    /*Adding a delay to let WhatsApp update MIME details
+                     * of the contact*/
+                    new Handler(getMainLooper()).postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            contactID = contactIdByPhoneNumber(MainActivity.this, phoneNumber, whatsAppMime);
+                        }
+                    }, 5000);
+                }
+            }else {
+                noInternet = true;
             }
             return null;
         }
@@ -139,11 +146,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             //Dismissing the progress bar
             loaderDialog.dismiss();
 
-            //Finally making the video call
-            if (isStringValid(contactID)){
-                /*Checking all kinds of WhatsApp installed and
-                * making a video call accordingly*/
-                makeWhatsAppVideoCall(contactID, MainActivity.this);
+
+            /*Finally making the video call after checking if the device has active internet
+            * connection or not*/
+            if (noInternet){
+                utils.toast(getString(R.string.no_internet));
+            }else if (isStringValid(contactID)){
+                utils.launchWhatsAppCall(contactID, packageName, whatsAppMime, MainActivity.this);
             }else {
                 utils.toast(getString(R.string.not_whatsapp_number));
             }
@@ -166,7 +175,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                             utils.toast(getString(R.string.permissions_grant));
                             utils.openAppSettings();
                         }else if (multiplePermissionsReport.areAllPermissionsGranted()){
-                            new SaveContactAndCall(PACKAGE_WHATSAPP, MIME_WHATSAPP_VIDEO_CALL).execute();
+                            //Letting user choose if multiple WhatsApps are installed
+                            makeWhatsAppVideoCall(MainActivity.this);
                         }else {
                             //Notifying user that permission has been denied
                             utils.toast(getString(R.string.permissions_denied));
@@ -180,19 +190,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 }).check();
     }
 
-    private void makeWhatsAppVideoCall(String contactID, Context context){
+    private void makeWhatsAppVideoCall(Context context){
         if (isAppInstalled(context, PACKAGE_WHATSAPP) && isAppInstalled(context, PACKAGE_WHATSAPP_BUSINESS)){
-            showAppOptionsToCall(contactID, context);
+            showAppOptionsToCall(context);
         }else if (isAppInstalled(context, PACKAGE_WHATSAPP)){
-            utils.launchWhatsAppCall(contactID, PACKAGE_WHATSAPP, MIME_WHATSAPP_VIDEO_CALL, context);
+            new SaveContactAndCall(PACKAGE_WHATSAPP, MIME_WHATSAPP_VIDEO_CALL).execute();
         }else if (isAppInstalled(context, PACKAGE_WHATSAPP_BUSINESS)){
-            utils.launchWhatsAppCall(contactID, PACKAGE_WHATSAPP_BUSINESS, MIME_WHATSAPP_BUSINESS_VIDEO_CALL, context);
+            new SaveContactAndCall(PACKAGE_WHATSAPP_BUSINESS, MIME_WHATSAPP_BUSINESS_VIDEO_CALL).execute();
         }else {
             utils.toast(getString(R.string.whatsapp_not_found));
         }
     }
 
-    private void showAppOptionsToCall(final String contactID, final Context context){
+    private void showAppOptionsToCall(final Context context){
         BottomSheetBuilder builder = new BottomSheetBuilder(context);
         builder.setMode(BottomSheetBuilder.MODE_LIST);
         builder.expandOnStart(true);
@@ -208,10 +218,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             public void onBottomSheetItemClick(MenuItem item) {
                 switch (item.getItemId()){
                     case 0:
-                        utils.launchWhatsAppCall(contactID, PACKAGE_WHATSAPP, MIME_WHATSAPP_VIDEO_CALL, context);
+                        new SaveContactAndCall(PACKAGE_WHATSAPP, MIME_WHATSAPP_VIDEO_CALL).execute();
                         break;
                     case 1:
-                        utils.launchWhatsAppCall(contactID, PACKAGE_WHATSAPP_BUSINESS, MIME_WHATSAPP_BUSINESS_VIDEO_CALL, context);
+                        new SaveContactAndCall(PACKAGE_WHATSAPP_BUSINESS, MIME_WHATSAPP_BUSINESS_VIDEO_CALL).execute();
                         break;
                 }
             }

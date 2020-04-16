@@ -8,11 +8,18 @@ import android.content.OperationApplicationException;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.drawable.Drawable;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.RemoteException;
 import android.provider.ContactsContract;
 import android.provider.Settings;
+import android.util.Log;
 import android.widget.Toast;
+
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 
 public class Utils {
@@ -152,6 +159,31 @@ public class Utils {
         } catch (RemoteException | OperationApplicationException exp) {}
 
         return String.valueOf(contactIndex);
+    }
+
+    //Method to check if phone
+    public static boolean hasActiveInternetConnection(Context context, String url) {
+        if (isNetworkAvailable(context)) {
+            try {
+                HttpURLConnection urlConnection = (HttpURLConnection) (new URL(url).openConnection());
+                urlConnection.setRequestProperty("User-Agent", "Test");
+                urlConnection.setRequestProperty("Connection", "close");
+                urlConnection.setConnectTimeout(2000);
+                urlConnection.connect();
+                return true;
+            } catch (IOException e) {
+                return false;
+            }
+        } else {
+            return false;
+        }
+    }
+
+    //Method to check if the device is connected to some network
+    private static boolean isNetworkAvailable(Context context) {
+        ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null;
     }
 
     //Method to show toast
