@@ -1,6 +1,6 @@
 # WhatsApp Video Caller - A privacy concerned video caller app 📹
 
-An app built with Java, AndroidX & Firebase for the patients who are in qurantine during this COVID-19 pandemic. This app doesn't lets the user bypass the WhatsApp video calling screen and access the WhatsApp in any way. You can get to know the whole story [here](https://medium.com/@vishalroygeek/helping-patients-communicate-during-covid-19-f2759c4bf32e)
+An app built with Java, AndroidX & Firebase for the patients who are in quarantine during this COVID-19 pandemic. This app doesn't lets the user bypass the WhatsApp video calling screen and access the WhatsApp in any way. You can get to know the whole story [here](https://medium.com/@vishalroygeek/helping-patients-communicate-during-covid-19-f2759c4bf32e)
 
 ## Demo
 
